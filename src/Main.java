@@ -1,4 +1,6 @@
 import java.util.Scanner;
+import java.util.*;
+import java.util.stream.IntStream;
 
 public class Main {
     public static void main(String[] args) {
@@ -6,65 +8,65 @@ public class Main {
         System.out.print("Enter the number of users: ");
         int numberUser = scanner.nextInt();
         scanner.nextLine();
-        String[] arrayUserName = new String[numberUser];
-        int[] arrayUserAge = new int[numberUser];
-        int userCount = 0;
-        while (userCount < numberUser) {
+        List<String> userNames = new ArrayList<>();
+        List<Integer> userAges = new ArrayList<>();
+
+        IntStream.range(0, numberUser).forEach(i -> {
+            if (userNames.size() >= numberUser) {
+                System.out.println("You have reached your user limit.");
+                printUserList(userNames, userAges);
+                System.exit(0);
+            }
+
             System.out.print("Enter name: ");
-            arrayUserName[userCount] = scanner.nextLine();
+            userNames.add(scanner.nextLine());
             System.out.print("Enter age: ");
-            arrayUserAge[userCount] = scanner.nextInt();
+            userAges.add(scanner.nextInt());
             scanner.nextLine();
-            userCount++;
             System.out.print("Do you want to continue? (y - Yes, n - No): ");
-            char selelctedExit = scanner.nextLine().charAt(0);
-            if (selelctedExit == 'y') {
+            char selectedExit = scanner.nextLine().charAt(0);
+
+            if (selectedExit == 'y') {
                 System.out.print("Calculate average age(1), Print only all names(2), Finish and print result user list(3): ");
                 int selectedOption = scanner.nextInt();
                 switch (selectedOption) {
                     case 1:
                         System.out.print("Average age:");
-                        int sum = 0;
-                        for (int indexUserAge = 0; indexUserAge < userCount; indexUserAge++) {
-                            sum += arrayUserAge[indexUserAge];
-                        }
-                        double averAge = (double) sum / userCount;
-                        System.out.println(averAge);
+                        double averageAge = userAges.stream().mapToInt(Integer::intValue).average().orElse(0);
+                        System.out.println(averageAge);
                         scanner.nextLine();
                         break;
                     case 2:
                         System.out.println("All name: ");
-                        for (int indexUserName = 0; indexUserName < userCount; indexUserName++) {
-                            System.out.println(arrayUserName[indexUserName]);
-                        }
+                        userNames.forEach(System.out::println);
                         scanner.nextLine();
                         break;
                     case 3:
-                        for (int indexUserName = 0; indexUserName < userCount; indexUserName++) {
-                            System.out.println("User" + (indexUserName + 1) + ": " + arrayUserName[indexUserName] + ", " + arrayUserAge[indexUserName]);
-                        }
+                        IntStream.range(0, userNames.size())
+                                .forEach(j -> System.out.println("User" + (j + 1) + ": " + userNames.get(j) + ", " + userAges.get(j)));
                         System.exit(0);
                         break;
                     default:
                         System.out.println("Error! Invalid input, please try again!");
                         break;
                 }
-            } else if (selelctedExit == 'n') {
-                for (int indexUserName = 0; indexUserName < userCount; indexUserName++) {
-                    System.out.println("User" + (indexUserName + 1) + ": " + arrayUserName[indexUserName] + ", " + arrayUserAge[indexUserName]);
-                }
+            } else if (selectedExit == 'n') {
+                printUserList(userNames, userAges);
                 System.out.println("Exit...");
                 System.exit(0);
             } else {
                 System.out.println("Error! Invalid input, please try again!");
             }
-            if (userCount == numberUser) {
-                System.out.println("You have reached your user limit.");
-                for (int indexUserName = 0; indexUserName < numberUser; indexUserName++) {
-                    System.out.println("User" + (indexUserName + 1) + ": " + arrayUserName[indexUserName] + ", " + arrayUserAge[indexUserName]);
-                }
-                System.exit(0); // Завершаем программу
+        });
+
+        System.out.println("You have reached your user limit.");
+        printUserList(userNames, userAges);
+        System.exit(0);
             }
-        }
+
+    private static void printUserList(List<String> userNames, List<Integer> userAges) {
+        IntStream.range(0, userNames.size())
+                .forEach(i -> System.out.println("User" + (i + 1) + ": " + userNames.get(i) + ", " + userAges.get(i)));
     }
 }
+
