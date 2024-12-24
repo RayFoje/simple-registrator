@@ -2,27 +2,52 @@ import java.util.Scanner;
 import java.util.*;
 import java.util.stream.IntStream;
 
+class User {
+    private String name;
+    private int age;
+
+    public User(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    @Override
+    public String toString() {
+        return "Name: " + name + ", Age: " + age;
+    }
+}
+
 public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         System.out.print("Enter the number of users: ");
         int numberUser = scanner.nextInt();
         scanner.nextLine();
-        List<String> userNames = new ArrayList<>();
-        List<Integer> userAges = new ArrayList<>();
+
+        List<User> users = new ArrayList<>();
 
         IntStream.range(0, numberUser).forEach(i -> {
-            if (userNames.size() >= numberUser) {
+            if (users.size() >= numberUser) {
                 System.out.println("You have reached your user limit.");
-                printUserList(userNames, userAges);
+                printUserList(users);
                 System.exit(0);
             }
 
             System.out.print("Enter name: ");
-            userNames.add(scanner.nextLine());
+            String name = scanner.nextLine();
             System.out.print("Enter age: ");
-            userAges.add(scanner.nextInt());
+            int age = scanner.nextInt();
             scanner.nextLine();
+            users.add(new User(name, age));
+
             System.out.print("Do you want to continue? (y - Yes, n - No): ");
             char selectedExit = scanner.nextLine().charAt(0);
 
@@ -32,18 +57,17 @@ public class Main {
                 switch (selectedOption) {
                     case 1:
                         System.out.print("Average age:");
-                        double averageAge = userAges.stream().mapToInt(Integer::intValue).average().orElse(0);
+                        double averageAge = users.stream().mapToInt(User::getAge).average().orElse(0);
                         System.out.println(averageAge);
                         scanner.nextLine();
                         break;
                     case 2:
                         System.out.println("All name: ");
-                        userNames.forEach(System.out::println);
+                        users.stream().map(User::getName).forEach(System.out::println);
                         scanner.nextLine();
                         break;
                     case 3:
-                        IntStream.range(0, userNames.size())
-                                .forEach(j -> System.out.println("User" + (j + 1) + ": " + userNames.get(j) + ", " + userAges.get(j)));
+                        printUserList(users);
                         System.exit(0);
                         break;
                     default:
@@ -51,7 +75,7 @@ public class Main {
                         break;
                 }
             } else if (selectedExit == 'n') {
-                printUserList(userNames, userAges);
+                printUserList(users);
                 System.out.println("Exit...");
                 System.exit(0);
             } else {
@@ -60,13 +84,13 @@ public class Main {
         });
 
         System.out.println("You have reached your user limit.");
-        printUserList(userNames, userAges);
+        printUserList(users);
         System.exit(0);
             }
 
-    private static void printUserList(List<String> userNames, List<Integer> userAges) {
-        IntStream.range(0, userNames.size())
-                .forEach(i -> System.out.println("User" + (i + 1) + ": " + userNames.get(i) + ", " + userAges.get(i)));
+    private static void printUserList(List<User> users) {
+        IntStream.range(0, users.size())
+                .forEach(i -> System.out.println("User" + (i + 1) + ": " + users.get(i)));
     }
 }
 
