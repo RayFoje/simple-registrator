@@ -2,29 +2,6 @@ import java.util.Scanner;
 import java.util.*;
 import java.util.stream.IntStream;
 
-class User {
-    private String name;
-    private int age;
-
-    public User(String name, int age) {
-        this.name = name;
-        this.age = age;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public int getAge() {
-        return age;
-    }
-
-    @Override
-    public String toString() {
-        return "Name: " + name + ", Age: " + age;
-    }
-}
-
 public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -52,28 +29,7 @@ public class Main {
             char selectedExit = scanner.nextLine().charAt(0);
 
             if (selectedExit == 'y') {
-                System.out.print("Calculate average age(1), Print only all names(2), Finish and print result user list(3): ");
-                int selectedOption = scanner.nextInt();
-                switch (selectedOption) {
-                    case 1:
-                        System.out.print("Average age:");
-                        double averageAge = users.stream().mapToInt(User::getAge).average().orElse(0);
-                        System.out.println(averageAge);
-                        scanner.nextLine();
-                        break;
-                    case 2:
-                        System.out.println("All name: ");
-                        users.stream().map(User::getName).forEach(System.out::println);
-                        scanner.nextLine();
-                        break;
-                    case 3:
-                        printUserList(users);
-                        System.exit(0);
-                        break;
-                    default:
-                        System.out.println("Error! Invalid input, please try again!");
-                        break;
-                }
+                processUserOptions(scanner, users);
             } else if (selectedExit == 'n') {
                 printUserList(users);
                 System.out.println("Exit...");
@@ -86,11 +42,37 @@ public class Main {
         System.out.println("You have reached your user limit.");
         printUserList(users);
         System.exit(0);
-            }
+    }
 
     private static void printUserList(List<User> users) {
         IntStream.range(0, users.size())
                 .forEach(i -> System.out.println("User" + (i + 1) + ": " + users.get(i)));
     }
+
+    private static void processUserOptions(Scanner scanner, List<User> users) {
+        System.out.print("Calculate average age(1), Print only all names(2), Finish and print result user list(3): ");
+        int selectedOption = scanner.nextInt();
+        switch (selectedOption) {
+            case 1:
+                System.out.print("Average age:");
+                double averageAge = users.stream().mapToInt(User::getAge).average().orElse(0);
+                System.out.println(averageAge);
+                scanner.nextLine();
+                break;
+            case 2:
+                System.out.println("All name: ");
+                users.stream().map(User::getName).forEach(System.out::println);
+                scanner.nextLine();
+                break;
+            case 3:
+                printUserList(users);
+                System.exit(0);
+                break;
+            default:
+                System.out.println("Error! Invalid input, please try again!");
+                break;
+        }
+    }
 }
+
 
