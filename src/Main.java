@@ -5,68 +5,79 @@ import java.util.stream.IntStream;
 public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        System.out.print("Enter the number of users: ");
-        int numberUser = scanner.nextInt();
-        scanner.nextLine();
-        List<String> userNames = new ArrayList<>();
-        List<Integer> userAges = new ArrayList<>();
+        System.out.print("Enter the number of users (1-150): ");
+        int numberUser = readValidInt(scanner, 1, 150);
+
+        List<User> users = new ArrayList<>();
 
         IntStream.range(0, numberUser).forEach(i -> {
-            if (userNames.size() >= numberUser) {
-                System.out.println("You have reached your user limit.");
-                printUserList(userNames, userAges);
-                System.exit(0);
-            }
-
-            System.out.print("Enter name: ");
-            userNames.add(scanner.nextLine());
-            System.out.print("Enter age: ");
-            userAges.add(scanner.nextInt());
-            scanner.nextLine();
-            System.out.print("Do you want to continue? (y - Yes, n - No): ");
-            char selectedExit = scanner.nextLine().charAt(0);
-
-            if (selectedExit == 'y') {
-                System.out.print("Calculate average age(1), Print only all names(2), Finish and print result user list(3): ");
-                int selectedOption = scanner.nextInt();
-                switch (selectedOption) {
-                    case 1:
-                        System.out.print("Average age:");
-                        double averageAge = userAges.stream().mapToInt(Integer::intValue).average().orElse(0);
-                        System.out.println(averageAge);
-                        scanner.nextLine();
-                        break;
-                    case 2:
-                        System.out.println("All name: ");
-                        userNames.forEach(System.out::println);
-                        scanner.nextLine();
-                        break;
-                    case 3:
-                        IntStream.range(0, userNames.size())
-                                .forEach(j -> System.out.println("User" + (j + 1) + ": " + userNames.get(j) + ", " + userAges.get(j)));
-                        System.exit(0);
-                        break;
-                    default:
-                        System.out.println("Error! Invalid input, please try again!");
-                        break;
+            System.out.println("User " + (i + 1) + ":");
+            String name;
+            while (true) {
+                System.out.print("Enter name: ");
+                name = scanner.nextLine();
+                if (isValidName(name)) {
+                    break;
+                } else {
+                    System.out.print("Error! Name must only contain letters and cannot be empty. Try again. ");
                 }
-            } else if (selectedExit == 'n') {
-                printUserList(userNames, userAges);
-                System.out.println("Exit...");
-                System.exit(0);
+            }
+
+                System.out.print("Enter age: ");
+                int age = readValidInt(scanner, 0, 150);
+
+                users.add(new User(name, age));
+            });
+
+        while (true) {
+            processUserOptions(scanner, users);
+        }
+    }
+
+    private static void printUserList(List<User> users) {
+        int i = 0;
+        users.stream()
+                .forEach(user -> System.out.println("User" + (i + 1) + ": " + user));
+    }
+
+    private static boolean isValidName(String name) {
+        return name != null && !name.trim().isEmpty() && name.matches("[a-zA-Zа-яА-Я\\s]+");
+    }
+
+    private static int readValidInt(Scanner scanner, int min, int max) {
+        while (true) {
+            if (scanner.hasNextInt()) {
+                int value = scanner.nextInt();
+                scanner.nextLine();
+                if (value >= min && value <= max) {
+                    return value;
+                } else {
+                    System.out.printf("Error! Enter a number between %d and %d. Try again:", min, max);
+                }
             } else {
-                System.out.println("Error! Invalid input, please try again!");
+                System.out.print("Error! Invalid input. Please enter an integer:");
+                scanner.nextLine();
             }
-        });
+        }
+    }
 
-        System.out.println("You have reached your user limit.");
-        printUserList(userNames, userAges);
-        System.exit(0);
-            }
-
-    private static void printUserList(List<String> userNames, List<Integer> userAges) {
-        IntStream.range(0, userNames.size())
-                .forEach(i -> System.out.println("User" + (i + 1) + ": " + userNames.get(i) + ", " + userAges.get(i)));
+    private static void processUserOptions(Scanner scanner, List<User> users) {
+        System.out.print("\nSelect option: \n1 - Calculate average age \n2 - Print only all names \n3 - Finish and print result user list \nYour choice: ");
+        int selectedOption = readValidInt(scanner, 1, 3);
+        switch (selectedOption) {
+            case 1:
+                System.out.print("Average age:");
+                double averageAge = users.stream().mapToInt(User::getAge).average().orElse(0);
+                System.out.println(averageAge);
+                break;
+            case 2:
+                System.out.println("All name: ");
+                users.stream().map(User::getName).forEach(System.out::println);
+                break;
+            case 3:
+                printUserList(users);
+                System.exit(0);
+                break;
+        }
     }
 }
-
